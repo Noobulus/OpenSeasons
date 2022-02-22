@@ -1,8 +1,8 @@
 {
   "required": true,
-  "package": "mod.noobulus.tetrapak.mixin",
+  "package": "mod.noobulus.openseasons.mixin",
   "compatibilityLevel": "JAVA_17",
-  "refmap": "tetrapak.refmap.json",
+  "refmap": "openseasons.refmap.json",
   "client": [
   ],
   "injectors": {
@@ -10,15 +10,6 @@
   },
   "minVersion": "0.8",
   "mixins": [
-    "ContainerMinecartEntityMixin",
-    "DamageSourcePredicateMixin",
-    "DeployerTileEntityMixin",
-    "EntityPredicateMixin",
-    "InWorldProcessingMixin",
-    "ItemEntityMixin",
-    "ItemFrameMixin",
-    "PlayerInteractionManagerMixin",
-    "SpawnDropsMixin",
-    "UtilBoosterMixin"
+
   ]
 }

@@ -1,8 +1,5 @@
-package mod.noobulus.tetrapak;
+package mod.noobulus.openseasons;
 
-import mod.noobulus.tetrapak.loot.LootConditions;
-import mod.noobulus.tetrapak.networking.Packets;
-import mod.noobulus.tetrapak.predicate.PredicateManagers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.eventbus.api.IEventBus;

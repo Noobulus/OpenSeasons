@@ -1,4 +1,4 @@
-package mod.noobulus.tetrapak;
+package mod.noobulus.openseasons;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;

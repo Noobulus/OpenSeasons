@@ -1,4 +1,4 @@
-package mod.noobulus.tetrapak;
+package mod.noobulus.openseasons;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
