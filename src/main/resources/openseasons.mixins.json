@@ -1,0 +1,24 @@
+{
+  "required": true,
+  "package": "mod.noobulus.tetrapak.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "tetrapak.refmap.json",
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8",
+  "mixins": [
+    "ContainerMinecartEntityMixin",
+    "DamageSourcePredicateMixin",
+    "DeployerTileEntityMixin",
+    "EntityPredicateMixin",
+    "InWorldProcessingMixin",
+    "ItemEntityMixin",
+    "ItemFrameMixin",
+    "PlayerInteractionManagerMixin",
+    "SpawnDropsMixin",
+    "UtilBoosterMixin"
+  ]
+}
