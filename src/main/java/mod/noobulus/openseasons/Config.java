@@ -16,7 +16,7 @@ public class Config {
 
 		// WIP
 
-		COMMON_CONFIG = commonBuilder.build();
+		//COMMON_CONFIG = commonBuilder.build();
 	}
 
 	private Config() {
