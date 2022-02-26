@@ -2,6 +2,7 @@ package mod.noobulus.openseasons.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import mod.noobulus.openseasons.mixin.AccessorBiome;
+import mod.noobulus.openseasons.util.ModifiedTempAndHumid;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -16,8 +17,9 @@ public class CheckTempCommand {
             if (sender instanceof ServerPlayer player) {
                 BlockPos blockpos = new BlockPos(player.getEyePosition());
                 float temp = ((AccessorBiome) (Object) player.level.getBiome(blockpos)).callGetTemperature(blockpos);
+                float modTemp = ModifiedTempAndHumid.getModifiedTemperature(player.level.getBiome(blockpos), blockpos);
                 float humid = player.level.getBiome(blockpos).getDownfall();
-                command.getSource().sendSuccess(new TextComponent("Temp/Humid: " + temp + "/" + humid), true);
+                command.getSource().sendSuccess(new TextComponent("Temp/Humid: " + temp + "/" + humid + " & MOD TEMP: " + modTemp), true);
                 return 1;
             }
             return 0;

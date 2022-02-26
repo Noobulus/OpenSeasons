@@ -14,7 +14,7 @@ public class BiomeColorUtils {
     }
 
     private static int getGrassColorFromTextureAndPos(Biome biome, BlockPos pos) {
-        double d0 = Mth.clamp(((AccessorBiome) (Object) biome).callGetTemperature(pos), 0.0F, 1.0F);
+        double d0 = Mth.clamp(ModifiedTempAndHumid.getModifiedTemperature(biome, pos), 0.0F, 1.0F);
         double d1 = Mth.clamp(biome.getDownfall(), 0.0F, 1.0F);
         return GrassColor.get(d0, d1);
     }
@@ -24,11 +24,13 @@ public class BiomeColorUtils {
     }
 
     private static int getFoliageColorFromTextureAndPos(Biome biome, BlockPos pos) {
-        double d0 = Mth.clamp(((AccessorBiome) (Object) biome).callGetTemperature(pos), 0.0F, 1.0F);
+        double d0 = Mth.clamp(ModifiedTempAndHumid.getModifiedTemperature(biome, pos), 0.0F, 1.0F);
         double d1 = Mth.clamp(biome.getDownfall(), 0.0F, 1.0F);
         return FoliageColor.get(d0, d1);
     }
 }
 
-//TODO: make biome colors scale with height/rainfall
+//DONE: make biome colors scale with height/rainfall
+//TODO: make temperature scale downwards for caves
+//TODO: make humidity scale the same way as temp
 //TODO: add the actual hooks to change temp/humidity with seasons lol

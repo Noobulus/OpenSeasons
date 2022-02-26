@@ -2,7 +2,6 @@ package mod.noobulus.openseasons.util;
 
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.ColorResolver;
 import net.minecraft.world.level.biome.Biome;
 
 public class HeightBiomeColors extends BiomeColors {
