@@ -15,7 +15,7 @@ public class BiomeColorUtils {
 
     private static int getGrassColorFromTextureAndPos(Biome biome, BlockPos pos) {
         double d0 = Mth.clamp(ModifiedTempAndHumid.getModifiedTemperature(biome, pos), 0.0F, 1.0F);
-        double d1 = Mth.clamp(biome.getDownfall(), 0.0F, 1.0F);
+        double d1 = Mth.clamp(ModifiedTempAndHumid.getModifiedHumidity(biome, pos), 0.0F, 1.0F);
         return GrassColor.get(d0, d1);
     }
 
@@ -25,7 +25,7 @@ public class BiomeColorUtils {
 
     private static int getFoliageColorFromTextureAndPos(Biome biome, BlockPos pos) {
         double d0 = Mth.clamp(ModifiedTempAndHumid.getModifiedTemperature(biome, pos), 0.0F, 1.0F);
-        double d1 = Mth.clamp(biome.getDownfall(), 0.0F, 1.0F);
+        double d1 = Mth.clamp(ModifiedTempAndHumid.getModifiedHumidity(biome, pos), 0.0F, 1.0F);
         return FoliageColor.get(d0, d1);
     }
 }

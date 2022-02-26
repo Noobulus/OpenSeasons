@@ -8,6 +8,6 @@ public class OSCommands {
     @SubscribeEvent
     public static void register(RegisterCommandsEvent event) {
         CommandDispatcher dp = event.getDispatcher();
-        CheckTempCommand.register(dp);
+        CheckClimateCommand.register(dp);
     }
 }

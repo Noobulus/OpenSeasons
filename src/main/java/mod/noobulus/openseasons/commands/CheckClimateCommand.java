@@ -10,16 +10,17 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 
-public class CheckTempCommand {
+public class CheckClimateCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("os:temp").executes((command) -> {
+        dispatcher.register(Commands.literal("os:climate").executes((command) -> {
             Entity sender = command.getSource().getEntity();
             if (sender instanceof ServerPlayer player) {
                 BlockPos blockpos = new BlockPos(player.getEyePosition());
                 float temp = ((AccessorBiome) (Object) player.level.getBiome(blockpos)).callGetTemperature(blockpos);
-                float modTemp = ModifiedTempAndHumid.getModifiedTemperature(player.level.getBiome(blockpos), blockpos);
                 float humid = player.level.getBiome(blockpos).getDownfall();
-                command.getSource().sendSuccess(new TextComponent("Temp/Humid: " + temp + "/" + humid + " & MOD TEMP: " + modTemp), true);
+                float modTemp = ModifiedTempAndHumid.getModifiedTemperature(player.level.getBiome(blockpos), blockpos);
+                float modHumid = ModifiedTempAndHumid.getModifiedHumidity(player.level.getBiome(blockpos), blockpos);
+                command.getSource().sendSuccess(new TextComponent("Base Temp/Humid: " + temp + "/" + humid + " | Mod Temp/Humid: " + modTemp + "/" + modHumid), true);
                 return 1;
             }
             return 0;
