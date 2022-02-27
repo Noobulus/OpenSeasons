@@ -31,6 +31,9 @@ public abstract class ClientLevelMixin extends Level {
         super(pLevelData, pDimension, pDimensionType, pProfiler, pIsClientSide, pIsDebug, pBiomeZoomSeed);
     }
 
+    // TODO: work out all the places in Biome where temperature and humidity are used and hook into them so i can mess with 'em
+    // ex. freak weather, future seasonal hooks, snow golems surviving under ground, etc.
+
     @Inject(method = "<init>", at = @At("RETURN"))
     private void onInit(CallbackInfo ci) {
         this.tintCaches = Util.make(new Object2ObjectArrayMap<>(3), (map) -> {

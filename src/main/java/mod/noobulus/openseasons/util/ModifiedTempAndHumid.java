@@ -46,6 +46,10 @@ public class ModifiedTempAndHumid {
         }
     }
 
+    // TODO: fix the shit list - swamps, dark forests, and badlands all have color overrides that i don't really want below ground
+    // TODO: implement alternative colormaps for different seasons and just colormaps in general for spruce, birch, lilypads, etc.
+    // TODO: make cave biomes immune to scaling and add an allowlist for dimensions so we don't have temperate lava oceans in the nether
+
     private static float getHeightTemperature(Biome biome, BlockPos pos) {
         float tempToMod = ((AccessorBiome) (Object) biome).getClimateSettings().temperatureModifier.modifyTemperature(pos, biome.getBaseTemperature());
         float noiseMod = (float)(((AccessorBiome) (Object) biome).getTEMPERATURE_NOISE().getValue((double)((float)pos.getX() / 8.0F), (double)((float)pos.getZ() / 8.0F), false) * 8.0D);
