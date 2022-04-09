@@ -10,6 +10,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Cursor3D;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.ColorResolver;
@@ -27,8 +28,8 @@ import java.util.function.Supplier;
 public abstract class ClientLevelMixin extends Level {
     @Shadow @Mutable @Final private Object2ObjectArrayMap<ColorResolver, BlockTintCache> tintCaches;
 
-    protected ClientLevelMixin(WritableLevelData pLevelData, ResourceKey<Level> pDimension, DimensionType pDimensionType, Supplier<ProfilerFiller> pProfiler, boolean pIsClientSide, boolean pIsDebug, long pBiomeZoomSeed) {
-        super(pLevelData, pDimension, pDimensionType, pProfiler, pIsClientSide, pIsDebug, pBiomeZoomSeed);
+    protected ClientLevelMixin(WritableLevelData pLevelData, ResourceKey<Level> pDimension, Holder<DimensionType> pDimensionTypeRegistration, Supplier<ProfilerFiller> pProfiler, boolean pIsClientSide, boolean pIsDebug, long pBiomeZoomSeed) {
+        super(pLevelData, pDimension, pDimensionTypeRegistration, pProfiler, pIsClientSide, pIsDebug, pBiomeZoomSeed);
     }
 
     // TODO: work out all the places in Biome where temperature and humidity are used and hook into them so i can mess with 'em
@@ -52,7 +53,7 @@ public abstract class ClientLevelMixin extends Level {
     public int calculateBlockTint(BlockPos pBlockPos, HeightColorResolver pColorResolver) {
         int i = Minecraft.getInstance().options.biomeBlendRadius;
         if (i == 0) {
-            return pColorResolver.getColor(this.getBiome(pBlockPos), pBlockPos);
+            return pColorResolver.getColor(this.getBiome(pBlockPos).value(), pBlockPos);
         } else {
             int j = (i * 2 + 1) * (i * 2 + 1);
             int k = 0;
@@ -63,7 +64,7 @@ public abstract class ClientLevelMixin extends Level {
             int j1;
             for(BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(); cursor3d.advance(); i1 += j1 & 255) {
                 blockpos$mutableblockpos.set(cursor3d.nextX(), cursor3d.nextY(), cursor3d.nextZ());
-                j1 = pColorResolver.getColor(this.getBiome(blockpos$mutableblockpos), blockpos$mutableblockpos);
+                j1 = pColorResolver.getColor(this.getBiome(blockpos$mutableblockpos).value(), blockpos$mutableblockpos);
                 k += (j1 & 16711680) >> 16;
                 l += (j1 & '\uff00') >> 8;
             }

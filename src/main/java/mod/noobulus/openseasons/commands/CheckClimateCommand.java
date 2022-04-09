@@ -16,10 +16,10 @@ public class CheckClimateCommand {
             Entity sender = command.getSource().getEntity();
             if (sender instanceof ServerPlayer player) {
                 BlockPos blockpos = new BlockPos(player.getEyePosition());
-                float temp = ((AccessorBiome) (Object) player.level.getBiome(blockpos)).callGetTemperature(blockpos);
-                float humid = player.level.getBiome(blockpos).getDownfall();
-                float modTemp = ModifiedTempAndHumid.getModifiedTemperature(player.level.getBiome(blockpos), blockpos);
-                float modHumid = ModifiedTempAndHumid.getModifiedHumidity(player.level.getBiome(blockpos), blockpos);
+                float temp = ((AccessorBiome) (Object) player.level.getBiome(blockpos).value()).callGetTemperature(blockpos);
+                float humid = player.level.getBiome(blockpos).value().getDownfall();
+                float modTemp = ModifiedTempAndHumid.getModifiedTemperature(player.level.getBiome(blockpos).value(), blockpos);
+                float modHumid = ModifiedTempAndHumid.getModifiedHumidity(player.level.getBiome(blockpos).value(), blockpos);
                 command.getSource().sendSuccess(new TextComponent("Base Temp/Humid: " + temp + "/" + humid + " | Mod Temp/Humid: " + modTemp + "/" + modHumid), true);
                 return 1;
             }
