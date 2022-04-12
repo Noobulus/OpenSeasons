@@ -10,5 +10,6 @@ public class OSCommands {
         CommandDispatcher dp = event.getDispatcher();
         CheckClimateCommand.register(dp);
         ModifyTempCommand.register(dp);
+        CheckBiomeTypesCommand.register(dp);
     }
 }
