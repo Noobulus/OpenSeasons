@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.longs.Long2FloatLinkedOpenHashMap;
 import mod.noobulus.openseasons.mixin.AccessorBiome;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.world.level.biome.Biome;
 
 public class ModifiedTempAndHumid {
@@ -29,7 +30,7 @@ public class ModifiedTempAndHumid {
         });
     });
 
-    public static float getModifiedTemperature(Biome biome, BlockPos pos) {
+    public static float getModifiedTemperature(Holder<Biome> biome, BlockPos pos) {
         long i = pos.asLong();
         Long2FloatLinkedOpenHashMap long2floatlinkedopenhashmap = tempCache.get();
         float f = long2floatlinkedopenhashmap.get(i);
@@ -52,9 +53,9 @@ public class ModifiedTempAndHumid {
     // TODO: implement alternative colormaps for different seasons and just colormaps in general for spruce, birch, lilypads, etc.
     // TODO: make cave biomes immune to scaling and add an allowlist for dimensions so we don't have temperate lava oceans in the nether
 
-    private static float getHeightTemperature(Biome biome, BlockPos pos) {
-        float tempToMod = ((AccessorBiome) (Object) biome).getClimateSettings().temperatureModifier.modifyTemperature(pos, biome.getBaseTemperature()) + cmdTempMod;
-        float noiseMod = (float)(((AccessorBiome) (Object) biome).getTEMPERATURE_NOISE().getValue((double)((float)pos.getX() / 8.0F), (double)((float)pos.getZ() / 8.0F), false) * 8.0D);
+    private static float getHeightTemperature(Holder<Biome> biome, BlockPos pos) {
+        float tempToMod = ((AccessorBiome) (Object) biome.value()).getClimateSettings().temperatureModifier.modifyTemperature(pos, biome.value().getBaseTemperature()) + cmdTempMod;
+        float noiseMod = (float)(((AccessorBiome) (Object) biome.value()).getTEMPERATURE_NOISE().getValue((double)((float)pos.getX() / 8.0F), (double)((float)pos.getZ() / 8.0F), false) * 8.0D);
         if (pos.getY() > 80) {
             return tempToMod - (noiseMod + (float)pos.getY() - 80.0F) * 0.05F / 40.0F; // vanilla scaling
         } else if (pos.getY() < 55 && pos.getY() > 0) {
@@ -72,7 +73,7 @@ public class ModifiedTempAndHumid {
         }
     }
 
-    public static float getModifiedHumidity(Biome biome, BlockPos pos) {
+    public static float getModifiedHumidity(Holder<Biome> biome, BlockPos pos) {
         long i = pos.asLong();
         Long2FloatLinkedOpenHashMap long2floatlinkedopenhashmap = humidCache.get(); // steal caching code from temps
         float f = long2floatlinkedopenhashmap.get(i);
@@ -89,8 +90,8 @@ public class ModifiedTempAndHumid {
         }
     }
 
-    public static float getHeightHumidity(Biome biome, BlockPos pos) {
-        float humidToMod = biome.getDownfall();
+    public static float getHeightHumidity(Holder<Biome> biome, BlockPos pos) {
+        float humidToMod = biome.value().getDownfall();
         //float noiseMod = (float)(((AccessorBiome) (Object) biome).getTEMPERATURE_NOISE().getValue((double)((float)pos.getX() / 8.0F), (double)((float)pos.getZ() / 8.0F), false) * 8.0D);
         float noiseMod = 0F; //TODO: add noise to humidity scaling like with temperature
         if (pos.getY() < 55) {

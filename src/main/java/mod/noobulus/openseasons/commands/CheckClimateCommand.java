@@ -18,8 +18,8 @@ public class CheckClimateCommand {
                 BlockPos blockpos = new BlockPos(player.getEyePosition());
                 float temp = ((AccessorBiome) (Object) player.level.getBiome(blockpos).value()).callGetTemperature(blockpos);
                 float humid = player.level.getBiome(blockpos).value().getDownfall();
-                float modTemp = ModifiedTempAndHumid.getModifiedTemperature(player.level.getBiome(blockpos).value(), blockpos);
-                float modHumid = ModifiedTempAndHumid.getModifiedHumidity(player.level.getBiome(blockpos).value(), blockpos);
+                float modTemp = ModifiedTempAndHumid.getModifiedTemperature(player.level.getBiome(blockpos), blockpos);
+                float modHumid = ModifiedTempAndHumid.getModifiedHumidity(player.level.getBiome(blockpos), blockpos);
                 command.getSource().sendSuccess(new TextComponent("Base Temp/Humid: " + temp + "/" + humid + " | Mod Temp/Humid: " + modTemp + "/" + modHumid), true);
                 return 1;
             }

@@ -53,7 +53,7 @@ public abstract class ClientLevelMixin extends Level {
     public int calculateBlockTint(BlockPos pBlockPos, HeightColorResolver pColorResolver) {
         int i = Minecraft.getInstance().options.biomeBlendRadius;
         if (i == 0) {
-            return pColorResolver.getColor(this.getBiome(pBlockPos).value(), pBlockPos);
+            return pColorResolver.getColor(this.getBiome(pBlockPos), pBlockPos);
         } else {
             int j = (i * 2 + 1) * (i * 2 + 1);
             int k = 0;
@@ -64,7 +64,7 @@ public abstract class ClientLevelMixin extends Level {
             int j1;
             for(BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(); cursor3d.advance(); i1 += j1 & 255) {
                 blockpos$mutableblockpos.set(cursor3d.nextX(), cursor3d.nextY(), cursor3d.nextZ());
-                j1 = pColorResolver.getColor(this.getBiome(blockpos$mutableblockpos).value(), blockpos$mutableblockpos);
+                j1 = pColorResolver.getColor(this.getBiome(blockpos$mutableblockpos), blockpos$mutableblockpos);
                 k += (j1 & 16711680) >> 16;
                 l += (j1 & '\uff00') >> 8;
             }
