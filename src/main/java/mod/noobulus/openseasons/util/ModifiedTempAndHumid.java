@@ -46,23 +46,28 @@ public class ModifiedTempAndHumid {
         }
     }
 
+    public static float cmdTempMod = 0.0F;
+
     // TODO: fix the shit list - swamps, dark forests, and badlands all have color overrides that i don't really want below ground
     // TODO: implement alternative colormaps for different seasons and just colormaps in general for spruce, birch, lilypads, etc.
     // TODO: make cave biomes immune to scaling and add an allowlist for dimensions so we don't have temperate lava oceans in the nether
 
     private static float getHeightTemperature(Biome biome, BlockPos pos) {
-        float tempToMod = ((AccessorBiome) (Object) biome).getClimateSettings().temperatureModifier.modifyTemperature(pos, biome.getBaseTemperature());
+        float tempToMod = ((AccessorBiome) (Object) biome).getClimateSettings().temperatureModifier.modifyTemperature(pos, biome.getBaseTemperature()) + cmdTempMod;
         float noiseMod = (float)(((AccessorBiome) (Object) biome).getTEMPERATURE_NOISE().getValue((double)((float)pos.getX() / 8.0F), (double)((float)pos.getZ() / 8.0F), false) * 8.0D);
         if (pos.getY() > 80) {
-            return tempToMod - (noiseMod + (float)pos.getY() - 80.0F) * 0.05F / 40.0F;
-        } else if (pos.getY() < 55) {
+            return tempToMod - (noiseMod + (float)pos.getY() - 80.0F) * 0.05F / 40.0F; // vanilla scaling
+        } else if (pos.getY() < 55 && pos.getY() > 0) {
             float moddedTemp = tempToMod + (((tempToMod > 0.5) ? -1 : 1) * ((0.05F * noiseMod) + ((55.0F - (float)pos.getY())) * 5.0F)) / 40.0F; // TODO: fix this garbage
             if (tempToMod > 0.5) {
                 return (moddedTemp > 0.5) ? moddedTemp : 0.5F;
             } else {
                 return (moddedTemp < 0.5) ? moddedTemp : 0.5F;
             }
-        } else { // TODO: add something here to make it get warmer below y = 0
+        } else if (pos.getY() <= 0) {
+            float moddedTemp =  0.5F + (((0.05F * noiseMod) + ((0.0F - (float)pos.getY())) * 5.0F)) / 160.0F; // get warmer below y=0
+            return (moddedTemp < 2.0) ? moddedTemp : 2.0F;
+        } else {
             return tempToMod;
         }
     }

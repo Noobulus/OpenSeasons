@@ -9,5 +9,6 @@ public class OSCommands {
     public static void register(RegisterCommandsEvent event) {
         CommandDispatcher dp = event.getDispatcher();
         CheckClimateCommand.register(dp);
+        ModifyTempCommand.register(dp);
     }
 }
