@@ -1,18 +1,11 @@
 package mod.noobulus.openseasons.util;
 
-import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.longs.Long2FloatLinkedOpenHashMap;
 import mod.noobulus.openseasons.mixin.AccessorBiome;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraftforge.common.BiomeDictionary;
-
-import java.util.Optional;
-import java.util.Set;
 
 public class ModifiedTempAndHumid {
     private static final ThreadLocal<Long2FloatLinkedOpenHashMap> tempCache = ThreadLocal.withInitial(() -> {
@@ -62,7 +55,7 @@ public class ModifiedTempAndHumid {
 
     private static float getHeightTemperature(Holder<Biome> biome, BlockPos pos) {
         float tempToMod = ((AccessorBiome) (Object) biome.value()).getClimateSettings().temperatureModifier.modifyTemperature(pos, biome.value().getBaseTemperature());
-        if (!messWithClimate(biome)) {
+        if (climateDenyListed(biome.value())) {
             return tempToMod;
         }
         tempToMod += cmdTempMod;
@@ -103,7 +96,7 @@ public class ModifiedTempAndHumid {
 
     public static float getHeightHumidity(Holder<Biome> biome, BlockPos pos) {
         float humidToMod = biome.value().getDownfall();
-        if (!messWithClimate(biome)) {
+        if (climateDenyListed(biome.value())) {
             return humidToMod;
         }
         //float noiseMod = (float)(((AccessorBiome) (Object) biome).getTEMPERATURE_NOISE().getValue((double)((float)pos.getX() / 8.0F), (double)((float)pos.getZ() / 8.0F), false) * 8.0D);
@@ -120,17 +113,8 @@ public class ModifiedTempAndHumid {
         }
     }
 
-    private static boolean messWithClimate(Holder<Biome> biomeHolder) {
-        Either<ResourceKey<Biome>, Biome> either = biomeHolder.unwrap();
-        Optional<ResourceKey<Biome>> optRk = either.left();
-        if(optRk.isPresent()) {
-            Set<BiomeDictionary.Type> biomeTypes = BiomeDictionary.getTypes(optRk.get());
-            for(BiomeDictionary.Type type : biomeTypes) {
-                if (type.equals(BiomeDictionary.Type.UNDERGROUND) || type.equals(BiomeDictionary.Type.NETHER) || type.equals(BiomeDictionary.Type.END)) {
-                    return false; // don't mess with places that shouldn't have seasons
-                }
-            }
-        }
-        return true;
+    private static boolean climateDenyListed(Biome biome) {
+        Biome.BiomeCategory category = ((AccessorBiome) (Object) biome).getBiomeCategory();
+        return category.equals(Biome.BiomeCategory.UNDERGROUND) || category.equals(Biome.BiomeCategory.NETHER) || category.equals(Biome.BiomeCategory.THEEND);
     }
 }
