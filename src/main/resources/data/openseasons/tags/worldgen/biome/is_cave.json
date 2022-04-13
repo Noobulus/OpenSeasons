@@ -5,6 +5,10 @@
     "minecraft:dripstone_caves",
     "minecraft:lush_caves",
     {
+      "id": "quark:glimmering_weald",
+      "required": false
+    },
+    {
       "id": "#forge:is_underground",
       "required": false
     },

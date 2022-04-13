@@ -17,7 +17,4 @@ public interface AccessorBiome {
 
     @Accessor
     PerlinSimplexNoise getTEMPERATURE_NOISE();
-
-    @Accessor
-    Biome.BiomeCategory getBiomeCategory();
 }

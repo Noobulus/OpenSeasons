@@ -1,18 +1,28 @@
 package mod.noobulus.openseasons.util;
 
 import it.unimi.dsi.fastutil.longs.Long2FloatLinkedOpenHashMap;
-import mod.noobulus.openseasons.OpenSeasons;
 import mod.noobulus.openseasons.init.OSTags;
 import mod.noobulus.openseasons.mixin.AccessorBiome;
+import mod.noobulus.openseasons.seasons.SeasonManager;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
 
 public class ModifiedTempAndHumid {
+    private static int colderAboveLevel = 80;
+    private static int caveLevelBelow = 55;
+    private static int warmCaveLevelBelow = 0;
+    private static float skyScaleFactor = 0.05F / 40.0F;
+    private static float caveTempScaleFactor = 5.0F / 40.0F;
+    private static float caveHumidScaleFactor = 2.0F / 40.0F;
+    private static float warmCaveScaleFactor = 5.0F / 160.0F;
+    private static float caveTemp = 0.5F;
+    private static float caveHumidity = 0.5F;
+    private static float warmCaveTemp = 2.0F;
+    private static float warmCaveHumidity = 0.5F;
+    private static float caveNoiseScale = 0.05F;
+
     private static final ThreadLocal<Long2FloatLinkedOpenHashMap> tempCache = ThreadLocal.withInitial(() -> {
         return Util.make(() -> {
             Long2FloatLinkedOpenHashMap long2floatlinkedopenhashmap = new Long2FloatLinkedOpenHashMap(1024, 0.25F) {
@@ -52,8 +62,6 @@ public class ModifiedTempAndHumid {
         }
     }
 
-    public static float cmdTempMod = 0.0F;
-
     // TODO: fix the shit list - swamps, dark forests, and badlands all have color overrides that i don't really want below ground
     // TODO: implement alternative colormaps for different seasons and just colormaps in general for spruce, birch, lilypads, etc.
     // TODO: figure out how to support non-overworld biomes
@@ -63,20 +71,21 @@ public class ModifiedTempAndHumid {
         if (climateDenyListed(biome)) {
             return tempToMod;
         }
-        tempToMod += cmdTempMod;
-        float noiseMod = (float)(((AccessorBiome) (Object) biome.value()).getTEMPERATURE_NOISE().getValue((double)((float)pos.getX() / 8.0F), (double)((float)pos.getZ() / 8.0F), false) * 8.0D);
-        if (pos.getY() > 80) {
-            return tempToMod - (noiseMod + (float)pos.getY() - 80.0F) * 0.05F / 40.0F; // vanilla scaling
-        } else if (pos.getY() < 55 && pos.getY() > 0) {
-            float moddedTemp = tempToMod + (((tempToMod > 0.5) ? -1 : 1) * ((0.05F * noiseMod) + ((55.0F - (float)pos.getY())) * 5.0F)) / 40.0F; // TODO: fix this garbage
-            if (tempToMod > 0.5) {
-                return (moddedTemp > 0.5) ? moddedTemp : 0.5F;
+        tempToMod += SeasonManager.getCurrentSeason().getTempMod();
+        int yPos = pos.getY();
+        float noiseMod = (float)(((AccessorBiome) (Object) biome.value()).getTEMPERATURE_NOISE().getValue((pos.getX() / 8.0F), (pos.getZ() / 8.0F), false) * 8.0D);
+        if (yPos > colderAboveLevel) {
+            return tempToMod - (noiseMod + yPos - colderAboveLevel) * skyScaleFactor;
+        } else if (yPos < caveLevelBelow && yPos > warmCaveLevelBelow) {
+            float moddedTemp = tempToMod + (((tempToMod > caveTemp) ? -1 : 1) * (((noiseMod * caveNoiseScale) + caveLevelBelow - yPos) * caveTempScaleFactor));
+            if (tempToMod > caveTemp) {
+                return Math.max(moddedTemp, caveTemp);
             } else {
-                return (moddedTemp < 0.5) ? moddedTemp : 0.5F;
+                return Math.min(moddedTemp, caveTemp);
             }
-        } else if (pos.getY() <= 0) {
-            float moddedTemp =  0.5F + (((0.05F * noiseMod) + ((0.0F - (float)pos.getY())) * 5.0F)) / 160.0F; // get warmer below y=0
-            return (moddedTemp < 2.0) ? moddedTemp : 2.0F;
+        } else if (yPos <= warmCaveLevelBelow) {
+            float moddedTemp =  caveTemp + (((noiseMod * caveNoiseScale) + warmCaveLevelBelow - yPos) * warmCaveScaleFactor); // get warmer below y=0
+            return Math.min(moddedTemp, warmCaveTemp);
         } else {
             return tempToMod;
         }
@@ -104,14 +113,17 @@ public class ModifiedTempAndHumid {
         if (climateDenyListed(biome)) {
             return humidToMod;
         }
-        //float noiseMod = (float)(((AccessorBiome) (Object) biome).getTEMPERATURE_NOISE().getValue((double)((float)pos.getX() / 8.0F), (double)((float)pos.getZ() / 8.0F), false) * 8.0D);
+        //float noiseMod = (float)(((AccessorBiome) (Object) biome).getTEMPERATURE_NOISE().getValue((double)((float)pos.getX() / 8.0F), (double)((float)pos.getZ() / 8.0F), false) * 8.0D)
+        humidToMod += SeasonManager.getCurrentSeason().getHumidMod();
+        int yPos = pos.getY();
         float noiseMod = 0F; //TODO: add noise to humidity scaling like with temperature
-        if (pos.getY() < 55) {
-            float moddedHumid = humidToMod + (((humidToMod > 0.5) ? -1 : 1) * ((0.05F * noiseMod) + ((55.0F - (float)pos.getY())) * 2.0F)) / 40.0F; // TODO: fix this garbage
-            if (humidToMod > 0.5) {
-                return (moddedHumid > 0.5) ? moddedHumid : 0.5F;
+        if (yPos < caveLevelBelow) {
+            float moddedHumid = humidToMod + (((humidToMod > caveHumidity) ? -1 : 1) * ((noiseMod * caveNoiseScale) + caveLevelBelow - yPos) * caveHumidScaleFactor);
+            // ((tempToMod > caveTemp) ? -1 : 1) * ((noiseMod + warmCaveLevelBelow - yPos) * caveScaleFactor)
+            if (humidToMod > caveHumidity) {
+                return Math.max(moddedHumid, caveHumidity);
             } else {
-                return (moddedHumid < 0.5) ? moddedHumid : 0.5F;
+                return Math.min(moddedHumid, caveHumidity);
             }
         } else { // TODO: figure out behavior below y = 0
             return humidToMod;
@@ -120,7 +132,7 @@ public class ModifiedTempAndHumid {
 
     public static boolean climateDenyListed(Holder<Biome> biome) {
         return biome.containsTag(OSTags.IS_SEASONS_DENIED) || !biome.containsTag(OSTags.IS_SEASONS_ALLOWED);
-        //Biome.BiomeCategory category = ((AccessorBiome) (Object) biome.value()).getBiomeCategory();
-        //return category.equals(Biome.BiomeCategory.UNDERGROUND) || category.equals(Biome.BiomeCategory.NETHER) || category.equals(Biome.BiomeCategory.THEEND);
+        //Biome.BiomeCategory category = ((AccessorBiome) (Object) biome.value()).getBiomeCategory()
+        //return category.equals(Biome.BiomeCategory.UNDERGROUND) || category.equals(Biome.BiomeCategory.NETHER) || category.equals(Biome.BiomeCategory.THEEND)
     }
 }
