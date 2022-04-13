@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#is_overworld",
+      "required": false
+    },
+    {
+      "id": "#forge:is_overworld",
+      "required": false
+    },
+    {
+      "id": "#c:in_overworld",
+      "required": false
+    },
+    {
+      "id": "#openseasons:is_overworld_surface",
+      "required": false
+    }
+  ]
+}

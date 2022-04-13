@@ -1,10 +1,15 @@
 package mod.noobulus.openseasons.util;
 
 import it.unimi.dsi.fastutil.longs.Long2FloatLinkedOpenHashMap;
+import mod.noobulus.openseasons.OpenSeasons;
+import mod.noobulus.openseasons.init.OSTags;
 import mod.noobulus.openseasons.mixin.AccessorBiome;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
 
 public class ModifiedTempAndHumid {
@@ -55,7 +60,7 @@ public class ModifiedTempAndHumid {
 
     private static float getHeightTemperature(Holder<Biome> biome, BlockPos pos) {
         float tempToMod = ((AccessorBiome) (Object) biome.value()).getClimateSettings().temperatureModifier.modifyTemperature(pos, biome.value().getBaseTemperature());
-        if (climateDenyListed(biome.value())) {
+        if (climateDenyListed(biome)) {
             return tempToMod;
         }
         tempToMod += cmdTempMod;
@@ -96,7 +101,7 @@ public class ModifiedTempAndHumid {
 
     public static float getHeightHumidity(Holder<Biome> biome, BlockPos pos) {
         float humidToMod = biome.value().getDownfall();
-        if (climateDenyListed(biome.value())) {
+        if (climateDenyListed(biome)) {
             return humidToMod;
         }
         //float noiseMod = (float)(((AccessorBiome) (Object) biome).getTEMPERATURE_NOISE().getValue((double)((float)pos.getX() / 8.0F), (double)((float)pos.getZ() / 8.0F), false) * 8.0D);
@@ -113,8 +118,9 @@ public class ModifiedTempAndHumid {
         }
     }
 
-    private static boolean climateDenyListed(Biome biome) {
-        Biome.BiomeCategory category = ((AccessorBiome) (Object) biome).getBiomeCategory();
-        return category.equals(Biome.BiomeCategory.UNDERGROUND) || category.equals(Biome.BiomeCategory.NETHER) || category.equals(Biome.BiomeCategory.THEEND);
+    public static boolean climateDenyListed(Holder<Biome> biome) {
+        return biome.containsTag(OSTags.IS_SEASONS_DENIED) || !biome.containsTag(OSTags.IS_SEASONS_ALLOWED);
+        //Biome.BiomeCategory category = ((AccessorBiome) (Object) biome.value()).getBiomeCategory();
+        //return category.equals(Biome.BiomeCategory.UNDERGROUND) || category.equals(Biome.BiomeCategory.NETHER) || category.equals(Biome.BiomeCategory.THEEND);
     }
 }

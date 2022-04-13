@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#openseasons:is_cave",
+      "required": false
+    }
+  ]
+}
