@@ -11,7 +11,7 @@ import net.minecraft.world.entity.Entity;
 
 public class BiomeHasSeasonsCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("os:seasons_allowed").executes((command) -> {
+        dispatcher.register(Commands.literal("openseasons").then(Commands.literal("seasons_allowed").executes((command) -> {
             Entity sender = command.getSource().getEntity();
             if (sender instanceof ServerPlayer player) {
                 BlockPos blockpos = new BlockPos(player.getEyePosition());
@@ -19,6 +19,6 @@ public class BiomeHasSeasonsCommand {
                 return 1;
             }
             return 0;
-        }));
+        })));
     }
 }

@@ -135,4 +135,33 @@ public class ModifiedTempAndHumid {
         //Biome.BiomeCategory category = ((AccessorBiome) (Object) biome.value()).getBiomeCategory()
         //return category.equals(Biome.BiomeCategory.UNDERGROUND) || category.equals(Biome.BiomeCategory.NETHER) || category.equals(Biome.BiomeCategory.THEEND)
     }
+
+    // wierd methods used for one thing go here!
+
+    public static int getClimateFireChanceMod(Holder<Biome> biome, BlockPos pos) {
+        // default chances are 300 for cardinals and 250 for vertical
+        float humidity = getModifiedHumidity(biome, pos);
+        float temperature = getModifiedTemperature(biome, pos);
+        return 0;
+    }
+
+    public static float getClimateFireSpreadMult(Holder<Biome> biome, BlockPos pos) {
+        float humidity = getModifiedHumidity(biome, pos);
+        float temperature = getModifiedTemperature(biome, pos);
+        return (1.5f - humidity) * (temperature);
+    }
+
+    public static boolean shouldRainHere(Holder<Biome> biome, BlockPos pos) {
+        return true;
+        /*float humidity = getModifiedHumidity(biome, pos);
+        float temperature = getModifiedTemperature(biome, pos);
+        return humidity > 0.3 && temperature < 0.95;*/
+    }
+
+    public static boolean moddedWarmEnoughToRain(Holder<Biome> biome, BlockPos pos) { // TODO: make snow work
+        return false;
+        /*float humidity = getModifiedHumidity(biome, pos);
+        float temperature = getModifiedTemperature(biome, pos);
+        return humidity > 0.3 && temperature < 0.95;*/
+    }
 }

@@ -33,7 +33,9 @@ public abstract class ClientLevelMixin extends Level {
     }
 
     // TODO: work out all the places in Biome where temperature and humidity are used and hook into them so i can mess with 'em
-    // ex. freak weather, future seasonal hooks, snow golems surviving under ground, etc.
+    // ex. freak weather, future seasonal hooks, snow golems surviving under ground, etc. (i get a freebie of thundersnows from this one)
+
+    // TODO: mixin to getSkyColor, getCloudColor, getCloudColor to make sunshowers work
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void onInit(CallbackInfo ci) {

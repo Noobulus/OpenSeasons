@@ -12,7 +12,7 @@ import net.minecraft.world.entity.Entity;
 
 public class CheckClimateCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("os:climate").executes((command) -> {
+        dispatcher.register(Commands.literal("openseasons").then(Commands.literal("climate").executes((command) -> {
             Entity sender = command.getSource().getEntity();
             if (sender instanceof ServerPlayer player) {
                 BlockPos blockpos = new BlockPos(player.getEyePosition());
@@ -24,6 +24,6 @@ public class CheckClimateCommand {
                 return 1;
             }
             return 0;
-        }));
+        })));
     }
 }

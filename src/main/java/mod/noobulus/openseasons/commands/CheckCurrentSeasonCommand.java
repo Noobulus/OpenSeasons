@@ -8,10 +8,10 @@ import net.minecraft.network.chat.TextComponent;
 
 public class CheckCurrentSeasonCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("os:get_season").executes((command) -> {
+        dispatcher.register(Commands.literal("openseasons").then(Commands.literal("get_season").executes((command) -> {
             command.getSource().sendSuccess(new TextComponent("Current Season: " + SeasonManager.getCurrentSeason().getName()), true);
             return 1;
-        }));
+        })));
     }
 }
 

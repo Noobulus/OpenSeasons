@@ -9,6 +9,12 @@
   "minVersion": "0.8",
   "mixins": [
     "AccessorBiome",
-    "ClientLevelMixin"
+    "ClientLevelMixin",
+    "FireBlockMixin",
+    "LevelMixin",
+    "ServerLevelMixin"
+  ],
+  "client": [
+    "LevelRendererMixin"
   ]
 }
