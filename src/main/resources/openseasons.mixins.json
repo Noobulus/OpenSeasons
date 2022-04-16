@@ -12,7 +12,8 @@
     "ClientLevelMixin",
     "FireBlockMixin",
     "LevelMixin",
-    "ServerLevelMixin"
+    "ServerLevelMixin",
+    "SnowGolemMixin"
   ],
   "client": [
     "LevelRendererMixin"

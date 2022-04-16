@@ -3,20 +3,23 @@ package mod.noobulus.openseasons.mixin;
 import mod.noobulus.openseasons.util.ModifiedTempAndHumid;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(Level.class)
 public abstract class LevelMixin {
-    // TODO: make rain happen in places where it's humid and cool enough to
+    @Redirect(method = "Lnet/minecraft/world/level/Level;isRainingAt(Lnet/minecraft/core/BlockPos;)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;getPrecipitation()Lnet/minecraft/world/level/biome/Biome$Precipitation;"))
+    private Biome.Precipitation redirectGetBiomePrecipitation(Biome biome) {
+        return Biome.Precipitation.RAIN;
+    }
 
-    @Inject(method = "Lnet/minecraft/world/level/Level;isRainingAt(Lnet/minecraft/core/BlockPos;)Z", at = @At(value = "RETURN", ordinal = 3), cancellable = true)
-    private void injectModifiedRain(BlockPos pPosition, CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(ModifiedTempAndHumid.shouldRainHere(this.getBiomeManager().getBiome(pPosition), pPosition));
+    @Redirect(method = "Lnet/minecraft/world/level/Level;isRainingAt(Lnet/minecraft/core/BlockPos;)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;warmEnoughToRain(Lnet/minecraft/core/BlockPos;)Z"))
+    private boolean redirectWarmEnoughToRain(Biome biome, BlockPos pos) {
+        return ModifiedTempAndHumid.moddedWarmEnoughToRain(this.getBiomeManager().getBiome(pos), pos);
     }
 
     @Shadow

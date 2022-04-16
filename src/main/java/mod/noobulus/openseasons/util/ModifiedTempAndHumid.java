@@ -7,7 +7,15 @@ import mod.noobulus.openseasons.seasons.SeasonManager;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 
 public class ModifiedTempAndHumid {
     private static int colderAboveLevel = 80;
@@ -44,6 +52,11 @@ public class ModifiedTempAndHumid {
             return long2floatlinkedopenhashmap;
         });
     });
+
+    public static void refreshCaches() {
+        tempCache.get().clear();
+        humidCache.get().clear();
+    }
 
     public static float getModifiedTemperature(Holder<Biome> biome, BlockPos pos) {
         long i = pos.asLong();
@@ -98,7 +111,7 @@ public class ModifiedTempAndHumid {
         if (!Float.isNaN(f)) {
             return f;
         } else {
-            float f1 = getHeightHumidity(biome, pos);
+            float f1 = Mth.clamp(getHeightHumidity(biome, pos), 0f, 1f); // constrain humidity to between 0 and 1
             if (long2floatlinkedopenhashmap.size() == 1024) {
                 long2floatlinkedopenhashmap.removeFirstFloat();
             }
@@ -108,7 +121,7 @@ public class ModifiedTempAndHumid {
         }
     }
 
-    public static float getHeightHumidity(Holder<Biome> biome, BlockPos pos) {
+    private static float getHeightHumidity(Holder<Biome> biome, BlockPos pos) {
         float humidToMod = biome.value().getDownfall();
         if (climateDenyListed(biome)) {
             return humidToMod;
@@ -136,7 +149,8 @@ public class ModifiedTempAndHumid {
         //return category.equals(Biome.BiomeCategory.UNDERGROUND) || category.equals(Biome.BiomeCategory.NETHER) || category.equals(Biome.BiomeCategory.THEEND)
     }
 
-    // wierd methods used for one thing go here!
+    /* gigantic block of methods that are used for redirects somewhere else
+    if this code is jank i blame vanilla */
 
     public static int getClimateFireChanceMod(Holder<Biome> biome, BlockPos pos) {
         // default chances are 300 for cardinals and 250 for vertical
@@ -163,5 +177,46 @@ public class ModifiedTempAndHumid {
         /*float humidity = getModifiedHumidity(biome, pos);
         float temperature = getModifiedTemperature(biome, pos);
         return humidity > 0.3 && temperature < 0.95;*/
+    }
+
+    public static boolean moddedColdEnoughToSnow(Holder<Biome> biome, BlockPos pos) {
+        return !moddedWarmEnoughToRain(biome, pos);
+    }
+
+    public static boolean shouldFreeze(LevelReader levelReader, BlockPos pos) {
+        return shouldFreeze(levelReader, pos, true);
+    }
+
+    public static boolean shouldFreeze(LevelReader levelReader, BlockPos waterPos, boolean mustBeAtEdge) {
+        if (!moddedWarmEnoughToRain(levelReader.getBiome(waterPos), waterPos)) {
+            if (waterPos.getY() >= levelReader.getMinBuildHeight() && waterPos.getY() < levelReader.getMaxBuildHeight() && levelReader.getBrightness(LightLayer.BLOCK, waterPos) < 10) {
+                BlockState blockstate = levelReader.getBlockState(waterPos);
+                FluidState fluidstate = levelReader.getFluidState(waterPos);
+                if (fluidstate.getType() == Fluids.WATER && blockstate.getBlock() instanceof LiquidBlock) {
+                    if (!mustBeAtEdge) {
+                        return true;
+                    }
+                    return !(levelReader.isWaterAt(waterPos.west()) && levelReader.isWaterAt(waterPos.east()) && levelReader.isWaterAt(waterPos.north()) && levelReader.isWaterAt(waterPos.south()));
+                }
+            }
+
+        }
+        return false;
+    }
+
+    public static boolean moddedShouldSnowGolemBurn(Holder<Biome> biome, BlockPos pos) {
+        return getModifiedTemperature(biome, pos) > 1.0F;
+    }
+
+    public static boolean shouldSnow(LevelReader levelReader, BlockPos pos) {
+        if (moddedWarmEnoughToRain(levelReader.getBiome(pos), pos)) {
+            return false;
+        } else {
+            if (pos.getY() >= levelReader.getMinBuildHeight() && pos.getY() < levelReader.getMaxBuildHeight() && levelReader.getBrightness(LightLayer.BLOCK, pos) < 10) {
+                BlockState blockstate = levelReader.getBlockState(pos);
+                return blockstate.isAir() && Blocks.SNOW.defaultBlockState().canSurvive(levelReader, pos);
+            }
+            return false;
+        }
     }
 }

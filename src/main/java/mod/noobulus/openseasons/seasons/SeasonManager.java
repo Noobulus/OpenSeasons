@@ -1,6 +1,7 @@
 package mod.noobulus.openseasons.seasons;
 
 import mod.noobulus.openseasons.init.DefaultSeasons;
+import mod.noobulus.openseasons.util.ModifiedTempAndHumid;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
@@ -27,13 +28,14 @@ public class SeasonManager {
     }
 
     @SubscribeEvent
-    public static void updateSeason(TickEvent.WorldTickEvent e) {
+    public static void updateSeason(TickEvent.WorldTickEvent e) { // TODO: one of these days figure out why this has random leftovers specifically when snow golems are in view
         if (!e.world.isClientSide()) {
             int refreshCooldown = 100; // every 5 sec
             if (currentTickCount % refreshCooldown == 0) {
                 Season levelSeason = getSeasonFromLevel(e.world);
                 if (levelSeason != currentSeason) {
                     lastSeason = currentSeason;
+                    ModifiedTempAndHumid.refreshCaches(); // clear caches because minecraft is a good video game
                 }
                 currentSeason = levelSeason;
             }
@@ -41,11 +43,11 @@ public class SeasonManager {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent // TODO: make this not hokey garbage and turn it into an actual packet thingy
     public static void updateClientSeason(TickEvent.ClientTickEvent e) {
         if (currentSeason != lastSeason) {
-            Minecraft.getInstance().levelRenderer.allChanged();
             lastSeason = currentSeason;
+            Minecraft.getInstance().levelRenderer.allChanged();
         }
     }
 
