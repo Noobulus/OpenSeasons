@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
 
-public final class OSTags {
+public final class OpenSeasonsTags {
     public static void initTags() {}
 
     public static final TagKey<Biome> IS_SEASONS_DENIED = TagKey.create(Registry.BIOME_REGISTRY,

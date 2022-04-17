@@ -1,9 +1,11 @@
 package mod.noobulus.openseasons.util;
 
 import it.unimi.dsi.fastutil.longs.Long2FloatLinkedOpenHashMap;
-import mod.noobulus.openseasons.init.OSTags;
+import mod.noobulus.openseasons.init.OpenSeasonsTags;
 import mod.noobulus.openseasons.mixin.AccessorBiome;
-import mod.noobulus.openseasons.seasons.SeasonManager;
+import mod.noobulus.openseasons.seasons.ClientSeasonManager;
+import mod.noobulus.openseasons.seasons.Season;
+import mod.noobulus.openseasons.seasons.ServerSeasonManager;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -16,6 +18,7 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraftforge.fml.DistExecutor;
 
 public class ModifiedTempAndHumid {
     private static int colderAboveLevel = 80;
@@ -84,7 +87,7 @@ public class ModifiedTempAndHumid {
         if (climateDenyListed(biome)) {
             return tempToMod;
         }
-        tempToMod += SeasonManager.getCurrentSeason().getTempMod();
+        tempToMod += getCurrentSeason().getTempMod();
         int yPos = pos.getY();
         float noiseMod = (float)(((AccessorBiome) (Object) biome.value()).getTEMPERATURE_NOISE().getValue((pos.getX() / 8.0F), (pos.getZ() / 8.0F), false) * 8.0D);
         if (yPos > colderAboveLevel) {
@@ -127,7 +130,7 @@ public class ModifiedTempAndHumid {
             return humidToMod;
         }
         //float noiseMod = (float)(((AccessorBiome) (Object) biome).getTEMPERATURE_NOISE().getValue((double)((float)pos.getX() / 8.0F), (double)((float)pos.getZ() / 8.0F), false) * 8.0D)
-        humidToMod += SeasonManager.getCurrentSeason().getHumidMod();
+        humidToMod += getCurrentSeason().getHumidMod();
         int yPos = pos.getY();
         float noiseMod = 0F; //TODO: add noise to humidity scaling like with temperature
         if (yPos < caveLevelBelow) {
@@ -144,9 +147,16 @@ public class ModifiedTempAndHumid {
     }
 
     public static boolean climateDenyListed(Holder<Biome> biome) {
-        return biome.containsTag(OSTags.IS_SEASONS_DENIED) || !biome.containsTag(OSTags.IS_SEASONS_ALLOWED);
+        return biome.containsTag(OpenSeasonsTags.IS_SEASONS_DENIED) || !biome.containsTag(OpenSeasonsTags.IS_SEASONS_ALLOWED);
         //Biome.BiomeCategory category = ((AccessorBiome) (Object) biome.value()).getBiomeCategory()
         //return category.equals(Biome.BiomeCategory.UNDERGROUND) || category.equals(Biome.BiomeCategory.NETHER) || category.equals(Biome.BiomeCategory.THEEND)
+    }
+
+    public static Season getCurrentSeason() {
+        return DistExecutor.safeRunForDist(
+                () -> ClientSeasonManager::getCurrentSeason,
+                () -> ServerSeasonManager::getCurrentSeason
+        );
     }
 
     /* gigantic block of methods that are used for redirects somewhere else
