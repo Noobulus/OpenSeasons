@@ -17,17 +17,11 @@ public abstract class FireBlockMixin extends BaseFireBlock {
     protected FireBlockMixin(Properties pProperties, float pFireDamage) {
         super(pProperties, pFireDamage);
     }
-    // TODO: mixin to tick to mess with fire spreading
 
     @ModifyVariable(method = "Lnet/minecraft/world/level/block/FireBlock;tick(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Ljava/util/Random;)V", at = @At("STORE"), ordinal = 2)
     private int modifyFireTickrate(int k, BlockState pState, ServerLevel pLevel, BlockPos pPos, Random pRand) {
         return ModifiedTempAndHumid.getClimateFireChanceMod(pLevel.getBiome(pPos), pPos);
     }
-
-    /*@ModifyArg(method = "Lnet/minecraft/world/level/block/FireBlock;tick(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Ljava/util/Random;)V", at = @At(value = "INVOKE", target = "Ljava/util/Random;nextInt(I)I", ordinal = 1), index = 0)
-    private int injectedAge(int age) {
-        return age;
-    }*/
 
     @ModifyVariable(method = "Lnet/minecraft/world/level/block/FireBlock;tick(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Ljava/util/Random;)V", at = @At("STORE"), ordinal = 1)
     private boolean disableHumidFlag(boolean flag) { // i reject your climate-based fire spread and substitute my own

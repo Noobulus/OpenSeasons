@@ -12,6 +12,7 @@
     "ClientLevelMixin",
     "FireBlockMixin",
     "LevelMixin",
+    "RotatedPillarBlockMixin",
     "ServerLevelMixin",
     "SnowGolemMixin"
   ],
