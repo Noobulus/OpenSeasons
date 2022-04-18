@@ -1,8 +1,8 @@
 package mod.noobulus.openseasons.network;
 
 import io.netty.buffer.ByteBuf;
-import mod.noobulus.openseasons.init.DefaultSeasons;
 import mod.noobulus.openseasons.seasons.ClientSeasonManager;
+import mod.noobulus.openseasons.seasons.SeasonMap;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -23,6 +23,6 @@ public record MsgSeasonChangeAck(String name) {
 
     public void handle(Supplier<NetworkEvent.Context> context) {
         context.get().enqueueWork(() ->
-                ClientSeasonManager.updateClientSeason(DefaultSeasons.getByName(name)));
+                ClientSeasonManager.updateClientSeason(SeasonMap.getByName(name)));
     }
 }

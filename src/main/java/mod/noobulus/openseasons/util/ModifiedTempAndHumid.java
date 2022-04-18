@@ -169,10 +169,17 @@ public class ModifiedTempAndHumid {
         return 0;
     }
 
-    public static float getClimateFireSpreadMult(Holder<Biome> biome, BlockPos pos) {
+    public static float getClimateFireEncouragementMult(Holder<Biome> biome, BlockPos pos) {
         float humidity = getModifiedHumidity(biome, pos);
-        float temperature = getModifiedTemperature(biome, pos);
-        return (1.5f - humidity) * (temperature);
+        if (humidity > 0.75F) {
+            return 0.5F; // more generous bottom bound that vanilla
+        } else if (humidity < 0.15F) {
+            return 4F; // dry as hell means tinderbox
+        } else if (humidity < 0.3F) {
+            return 2F; // increase spread in
+        } else {
+            return 1F; // normal when 0.3 < humidity < 0.75
+        }
     }
 
     public static boolean shouldRainHere(Holder<Biome> biome, BlockPos pos) {

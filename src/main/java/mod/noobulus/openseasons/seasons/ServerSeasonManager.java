@@ -11,9 +11,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import java.util.List;
 
 public class ServerSeasonManager {
-    private static Season currentSeason = DefaultSeasons.INVALID;; // dumb fallback
-    private static Season lastSeason = DefaultSeasons.INVALID;;
-    private static Season clientSeason = DefaultSeasons.INVALID;
+    private static Season currentSeason = SeasonMap.getByName("INVALID"); // dumb fallback
     private static int currentTickCount = 0;
 
     public static Season getSeasonFromLevel(Level level) {
@@ -24,10 +22,10 @@ public class ServerSeasonManager {
 
     public static Season seasonFromInt(int in) {
         return switch (in) {
-            case 2, 3 -> DefaultSeasons.SUMMER;
-            case 4, 5 -> DefaultSeasons.FALL;
-            case 6, 7 -> DefaultSeasons.WINTER;
-            default -> DefaultSeasons.SPRING;
+            case 2, 3 -> SeasonMap.getByName("Summer");
+            case 4, 5 -> SeasonMap.getByName("Fall");
+            case 6, 7 -> SeasonMap.getByName("Winter");
+            default -> SeasonMap.getByName("Spring");
         };
     }
 
@@ -39,7 +37,6 @@ public class ServerSeasonManager {
             if (currentTickCount % refreshCooldown == 0) {
                 Season levelSeason = getSeasonFromLevel(e.world);
                 if (levelSeason != currentSeason) {
-                    lastSeason = currentSeason;
                     ModifiedTempAndHumid.refreshCaches(); // clear caches because minecraft is a good video game
                     if (level.getServer() == null) {
                         return;

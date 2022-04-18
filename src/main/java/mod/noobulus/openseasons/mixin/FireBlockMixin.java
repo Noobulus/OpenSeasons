@@ -19,7 +19,7 @@ public abstract class FireBlockMixin extends BaseFireBlock {
     }
 
     @ModifyVariable(method = "Lnet/minecraft/world/level/block/FireBlock;tick(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Ljava/util/Random;)V", at = @At("STORE"), ordinal = 2)
-    private int modifyFireTickrate(int k, BlockState pState, ServerLevel pLevel, BlockPos pPos, Random pRand) {
+    private int modifyFireChance(int k, BlockState pState, ServerLevel pLevel, BlockPos pPos, Random pRand) {
         return ModifiedTempAndHumid.getClimateFireChanceMod(pLevel.getBiome(pPos), pPos);
     }
 
@@ -29,7 +29,7 @@ public abstract class FireBlockMixin extends BaseFireBlock {
     }
 
     @ModifyVariable(method = "Lnet/minecraft/world/level/block/FireBlock;tick(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Ljava/util/Random;)V", at = @At("STORE"), ordinal = 8)
-    private int modifyFireSpread(int i2, BlockState pState, ServerLevel pLevel, BlockPos pPos, Random pRand) {
-        return (int) (i2 * ModifiedTempAndHumid.getClimateFireSpreadMult(pLevel.getBiome(pPos), pPos));
+    private int modifyFireEncouragement(int encouragement, BlockState pState, ServerLevel pLevel, BlockPos pPos, Random pRand) {
+        return (int) (encouragement * ModifiedTempAndHumid.getClimateFireEncouragementMult(pLevel.getBiome(pPos), pPos));
     }
 }
