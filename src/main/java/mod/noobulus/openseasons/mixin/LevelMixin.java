@@ -12,16 +12,12 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(Level.class)
 public abstract class LevelMixin {
-    @Redirect(method = "Lnet/minecraft/world/level/Level;isRainingAt(Lnet/minecraft/core/BlockPos;)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;getPrecipitation()Lnet/minecraft/world/level/biome/Biome$Precipitation;"))
-    private Biome.Precipitation redirectGetBiomePrecipitation(Biome biome) {
-        return Biome.Precipitation.RAIN;
-    }
-
     @Redirect(method = "Lnet/minecraft/world/level/Level;isRainingAt(Lnet/minecraft/core/BlockPos;)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;warmEnoughToRain(Lnet/minecraft/core/BlockPos;)Z"))
     private boolean redirectWarmEnoughToRain(Biome biome, BlockPos pos) {
-        return ModifiedTempAndHumid.moddedWarmEnoughToRain(this.getBiomeManager().getBiome(pos), pos);
+        return ModifiedTempAndHumid.canRain(this.getBiomeManager().getBiome(pos), pos);
     }
 
     @Shadow
     public abstract BiomeManager getBiomeManager();
 }
+

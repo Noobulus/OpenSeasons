@@ -172,7 +172,7 @@ public class ModifiedTempAndHumid {
     public static float getClimateFireEncouragementMult(Holder<Biome> biome, BlockPos pos) {
         float humidity = getModifiedHumidity(biome, pos);
         if (humidity > 0.75F) {
-            return 0.5F; // more generous bottom bound that vanilla
+            return 0.5F; // more generous bottom bound than vanilla
         } else if (humidity < 0.15F) {
             return 4F; // dry as hell means tinderbox
         } else if (humidity < 0.3F) {
@@ -182,22 +182,29 @@ public class ModifiedTempAndHumid {
         }
     }
 
-    public static boolean shouldRainHere(Holder<Biome> biome, BlockPos pos) {
-        return true;
-        /*float humidity = getModifiedHumidity(biome, pos);
+    public static boolean canRainAndPrecipitate(Holder<Biome> biome, BlockPos pos) {
+        float humidity = getModifiedHumidity(biome, pos);
         float temperature = getModifiedTemperature(biome, pos);
-        return humidity > 0.3 && temperature < 0.95;*/
+        return canRain(biome, pos) && canPrecipitate(temperature, humidity);
     }
 
-    public static boolean moddedWarmEnoughToRain(Holder<Biome> biome, BlockPos pos) { // TODO: make snow work
-        return false;
-        /*float humidity = getModifiedHumidity(biome, pos);
+    public static boolean canSnowAndPrecipitate(Holder<Biome> biome, BlockPos pos) {
+        float humidity = getModifiedHumidity(biome, pos);
         float temperature = getModifiedTemperature(biome, pos);
-        return humidity > 0.3 && temperature < 0.95;*/
+        return canSnow(biome, pos) && canPrecipitate(temperature, humidity);
     }
 
-    public static boolean moddedColdEnoughToSnow(Holder<Biome> biome, BlockPos pos) {
-        return !moddedWarmEnoughToRain(biome, pos);
+    public static boolean canRain(Holder<Biome> biome, BlockPos pos) {
+        float temperature = getModifiedTemperature(biome, pos);
+        return temperature >= 0.15F;
+    }
+
+    public static boolean canSnow(Holder<Biome> biome, BlockPos pos) {
+        return !canRain(biome, pos);
+    }
+
+    public static boolean canPrecipitate(float temperature, float humidity) {
+        return humidity > 0.3F && temperature < 1.5F ;
     }
 
     public static boolean shouldFreeze(LevelReader levelReader, BlockPos pos) {
@@ -205,7 +212,7 @@ public class ModifiedTempAndHumid {
     }
 
     public static boolean shouldFreeze(LevelReader levelReader, BlockPos waterPos, boolean mustBeAtEdge) {
-        if (!moddedWarmEnoughToRain(levelReader.getBiome(waterPos), waterPos)) {
+        if (canSnow(levelReader.getBiome(waterPos), waterPos)) {
             if (waterPos.getY() >= levelReader.getMinBuildHeight() && waterPos.getY() < levelReader.getMaxBuildHeight() && levelReader.getBrightness(LightLayer.BLOCK, waterPos) < 10) {
                 BlockState blockstate = levelReader.getBlockState(waterPos);
                 FluidState fluidstate = levelReader.getFluidState(waterPos);
@@ -226,14 +233,12 @@ public class ModifiedTempAndHumid {
     }
 
     public static boolean shouldSnow(LevelReader levelReader, BlockPos pos) {
-        if (moddedWarmEnoughToRain(levelReader.getBiome(pos), pos)) {
-            return false;
-        } else {
+        if (canSnowAndPrecipitate(levelReader.getBiome(pos), pos)) {
             if (pos.getY() >= levelReader.getMinBuildHeight() && pos.getY() < levelReader.getMaxBuildHeight() && levelReader.getBrightness(LightLayer.BLOCK, pos) < 10) {
                 BlockState blockstate = levelReader.getBlockState(pos);
                 return blockstate.isAir() && Blocks.SNOW.defaultBlockState().canSurvive(levelReader, pos);
             }
-            return false;
         }
+        return false;
     }
 }

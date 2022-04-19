@@ -9,6 +9,8 @@
   "minVersion": "0.8",
   "mixins": [
     "AccessorBiome",
+    "BiomeBuilderMixin",
+    "BiomeMixin",
     "ClientLevelMixin",
     "FireBlockMixin",
     "LevelMixin",

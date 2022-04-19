@@ -14,25 +14,14 @@ import javax.annotation.Nullable;
 
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin {
-
     @Shadow @Nullable private ClientLevel level;
-
-    @Redirect(method = "Lnet/minecraft/client/renderer/LevelRenderer;renderSnowAndRain(Lnet/minecraft/client/renderer/LightTexture;FDDD)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;getPrecipitation()Lnet/minecraft/world/level/biome/Biome$Precipitation;"))
-    private Biome.Precipitation redirectGetBiomePrecipitationInRender(Biome biome) {
-        return Biome.Precipitation.RAIN;
-    }
 
     @Redirect(method = "Lnet/minecraft/client/renderer/LevelRenderer;renderSnowAndRain(Lnet/minecraft/client/renderer/LightTexture;FDDD)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;warmEnoughToRain(Lnet/minecraft/core/BlockPos;)Z"))
     private boolean redirectWarmEnoughToRainInRender(Biome biome, BlockPos pos) {
         if (level == null) { // prevent NPE shenanigans
             return false;
         }
-        return ModifiedTempAndHumid.moddedWarmEnoughToRain(level.getBiome(pos), pos);
-    }
-
-    @Redirect(method = "Lnet/minecraft/client/renderer/LevelRenderer;tickRain(Lnet/minecraft/client/Camera;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;getPrecipitation()Lnet/minecraft/world/level/biome/Biome$Precipitation;"))
-    private Biome.Precipitation redirectGetBiomePrecipitationInTick(Biome biome) {
-        return Biome.Precipitation.RAIN;
+        return ModifiedTempAndHumid.canRain(level.getBiome(pos), pos);
     }
 
     @Redirect(method = "Lnet/minecraft/client/renderer/LevelRenderer;tickRain(Lnet/minecraft/client/Camera;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;warmEnoughToRain(Lnet/minecraft/core/BlockPos;)Z"))
@@ -40,7 +29,7 @@ public class LevelRendererMixin {
         if (level == null) { // prevent NPE shenanigans
             return false;
         }
-        return ModifiedTempAndHumid.moddedWarmEnoughToRain(level.getBiome(pos), pos);
+        return ModifiedTempAndHumid.canRain(level.getBiome(pos), pos);
     }
 
 
