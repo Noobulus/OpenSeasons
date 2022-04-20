@@ -153,7 +153,7 @@ public class ModifiedTempAndHumid {
     }
 
     public static Season getCurrentSeason() {
-        return DistExecutor.safeRunForDist(
+        return DistExecutor.unsafeRunForDist(
                 () -> ClientSeasonManager::getCurrentSeason,
                 () -> ServerSeasonManager::getCurrentSeason
         );
@@ -162,11 +162,18 @@ public class ModifiedTempAndHumid {
     /* gigantic block of methods that are used for redirects somewhere else
     if this code is jank i blame vanilla */
 
-    public static int getClimateFireChanceMod(Holder<Biome> biome, BlockPos pos) {
-        // default chances are 300 for cardinals and 250 for vertical
+    public static float getClimateFireChanceMult(Holder<Biome> biome, BlockPos pos) {
+        // lower chance here means more fire, wack
         float humidity = getModifiedHumidity(biome, pos);
-        float temperature = getModifiedTemperature(biome, pos);
-        return 0;
+        if (humidity > 0.75F) {
+            return 0.5F; // vanilla does this, actually!
+        } else if (humidity < 0.15F) {
+            return 0.75F; // really dry biomes tick fire a lot faster
+        } else if (humidity < 0.3F) {
+            return 0.85F; // drier biomes tick fire a little faster
+        } else {
+            return 1F; // normal when 0.3 < humidity < 0.75
+        }
     }
 
     public static float getClimateFireEncouragementMult(Holder<Biome> biome, BlockPos pos) {
@@ -174,9 +181,9 @@ public class ModifiedTempAndHumid {
         if (humidity > 0.75F) {
             return 0.5F; // more generous bottom bound than vanilla
         } else if (humidity < 0.15F) {
-            return 4F; // dry as hell means tinderbox
+            return 12F; // dry as hell means tinderbox
         } else if (humidity < 0.3F) {
-            return 2F; // increase spread in
+            return 8F; // increased spread in drier biomes
         } else {
             return 1F; // normal when 0.3 < humidity < 0.75
         }
@@ -240,5 +247,15 @@ public class ModifiedTempAndHumid {
             }
         }
         return false;
+    }
+
+    public static boolean shouldSnowMelt(Holder<Biome> biome, BlockPos pos) {
+        float temperature = getModifiedTemperature(biome, pos);
+        return temperature > 0.25F;
+    }
+
+    public static boolean shouldIceMelt(Holder<Biome> biome, BlockPos pos) {
+        float temperature = getModifiedTemperature(biome, pos);
+        return temperature > 0.35F;
     }
 }

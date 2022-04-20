@@ -13,10 +13,12 @@
     "BiomeMixin",
     "ClientLevelMixin",
     "FireBlockMixin",
+    "IceBlockMixin",
     "LevelMixin",
     "RotatedPillarBlockMixin",
     "ServerLevelMixin",
-    "SnowGolemMixin"
+    "SnowGolemMixin",
+    "SnowLayerBlockMixin"
   ],
   "client": [
     "LevelRendererMixin"

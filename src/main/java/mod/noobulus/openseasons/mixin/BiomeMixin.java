@@ -21,11 +21,11 @@ public class BiomeMixin {
     
     @Inject(method = "Lnet/minecraft/world/level/biome/Biome;getPrecipitation()Lnet/minecraft/world/level/biome/Biome$Precipitation;", at = @At("RETURN"), cancellable = true)
     public void getPrecipitation(CallbackInfoReturnable<Biome.Precipitation> cir) {
-        Registry<Biome> BIR = BuiltinRegistries.BIOME;
+        /*Registry<Biome> BIR = BuiltinRegistries.BIOME;
         Holder<Biome> biome = BIR.getHolderOrThrow(BIR.getResourceKey(((Biome)(Object) this)).orElseThrow());
         if (biome.containsTag(OpenSeasonsTags.IS_SEASONS_DENIED) || !biome.containsTag(OpenSeasonsTags.IS_SEASONS_ALLOWED)) {
-            cir.setReturnValue(cir.getReturnValue());
-        }
+            return;
+        }*/
         float temperature = this.climateSettings.temperature + getCurrentSeason().getTempMod();
         float humidity = this.climateSettings.downfall + getCurrentSeason().getHumidMod();
         if (humidity < 0.1F || temperature > 1.5F) {
