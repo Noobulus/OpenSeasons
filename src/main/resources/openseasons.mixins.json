@@ -9,6 +9,7 @@
   "minVersion": "0.8",
   "mixins": [
     "AccessorBiome",
+    "AccessorServerLevel",
     "BiomeBuilderMixin",
     "BiomeMixin",
     "ClientLevelMixin",

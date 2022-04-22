@@ -7,17 +7,11 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.biome.Biome;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(ServerLevel.class)
 public class ServerLevelMixin {
-    /* TODO: mixin to weather goodies to make rain more/less common seasonally
-    advanceWeatherCycle and everything it messes with seem like good starting points */
-
-    /*@Redirect(method = "Lnet/minecraft/server/level/ServerLevel;tickChunk(Lnet/minecraft/world/level/chunk/LevelChunk;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;getPrecipitation()Lnet/minecraft/world/level/biome/Biome$Precipitation;"))
-    private Biome.Precipitation redirectGetBiomePrecipitation(Biome biome) {
-        return Biome.Precipitation.RAIN;
-    }*/
 
     @Redirect(method = "Lnet/minecraft/server/level/ServerLevel;tickChunk(Lnet/minecraft/world/level/chunk/LevelChunk;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;shouldFreeze(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;)Z"))
     private boolean redirectShouldFreeze(Biome biome, LevelReader level, BlockPos pos) {
@@ -28,4 +22,77 @@ public class ServerLevelMixin {
     private boolean redirectShouldSnow(Biome biome, LevelReader level, BlockPos pos) {
         return ModifiedTempAndHumid.shouldSnow(level, pos);
     }
+
+    // fun fact, did you know @ModifyArgs doesn't work on forge? i didn't know!
+
+    @ModifyArg(method = "Lnet/minecraft/server/level/ServerLevel;advanceWeatherCycle()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;randomBetweenInclusive(Ljava/util/Random;II)I", ordinal = 0), index = 1)
+    private int modifyMinThunderTime(int minThunderTime) {
+        float mod = ModifiedTempAndHumid.getCurrentSeason().getMinThunderTimeMod();
+        return (int) (minThunderTime * mod);
+    }
+
+    @ModifyArg(method = "Lnet/minecraft/server/level/ServerLevel;advanceWeatherCycle()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;randomBetweenInclusive(Ljava/util/Random;II)I", ordinal = 0), index = 2)
+    private int modifyMaxThunderTime(int maxThunderTime) {
+        float mod = ModifiedTempAndHumid.getCurrentSeason().getMaxThunderTimeMod();
+        return (int) (maxThunderTime * mod);
+    }
+
+    @ModifyArg(method = "Lnet/minecraft/server/level/ServerLevel;advanceWeatherCycle()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;randomBetweenInclusive(Ljava/util/Random;II)I", ordinal = 1), index = 1)
+    private int modifyMinThunderDelay(int minThunderDelay) {
+        float mod = ModifiedTempAndHumid.getCurrentSeason().getMinThunderDelayMod();
+        return (int) (minThunderDelay * mod);
+    }
+
+    @ModifyArg(method = "Lnet/minecraft/server/level/ServerLevel;advanceWeatherCycle()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;randomBetweenInclusive(Ljava/util/Random;II)I", ordinal = 1), index = 2)
+    private int modifyMaxThunderDelay(int maxThunderDelay) {
+        float mod = ModifiedTempAndHumid.getCurrentSeason().getMaxThunderDelayMod();
+        return (int) (maxThunderDelay * mod);
+    }
+
+    @ModifyArg(method = "Lnet/minecraft/server/level/ServerLevel;advanceWeatherCycle()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;randomBetweenInclusive(Ljava/util/Random;II)I", ordinal = 2), index = 1)
+    private int modifyMinRainTime(int minRainTime) {
+        float mod = ModifiedTempAndHumid.getCurrentSeason().getMinRainTimeMod();
+        return (int) (minRainTime * mod);
+    }
+
+    @ModifyArg(method = "Lnet/minecraft/server/level/ServerLevel;advanceWeatherCycle()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;randomBetweenInclusive(Ljava/util/Random;II)I", ordinal = 2), index = 2)
+    private int modifyMaxRainTime(int maxRainTime) {
+        float mod = ModifiedTempAndHumid.getCurrentSeason().getMaxRainTimeMod();
+        return (int) (maxRainTime * mod);
+    }
+
+    @ModifyArg(method = "Lnet/minecraft/server/level/ServerLevel;advanceWeatherCycle()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;randomBetweenInclusive(Ljava/util/Random;II)I", ordinal = 3), index = 1)
+    private int modifyMinRainDelay(int minRainDelay) {
+        float mod = ModifiedTempAndHumid.getCurrentSeason().getMinRainDelayMod();
+        return (int) (minRainDelay * mod);
+    }
+
+    @ModifyArg(method = "Lnet/minecraft/server/level/ServerLevel;advanceWeatherCycle()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;randomBetweenInclusive(Ljava/util/Random;II)I", ordinal = 3), index = 2)
+    private int modifyMaxRainDelay(int maxRainDelay) {
+        float mod = ModifiedTempAndHumid.getCurrentSeason().getMaxRainDelayMod();
+        return (int) (maxRainDelay * mod);
+    }
+
+        /*some references:
+        if (thundering) {
+            j = Mth.randomBetweenInclusive(this.random, MIN_THUNDER_TIME, MAX_THUNDER_TIME);
+        } else {
+            j = Mth.randomBetweenInclusive(this.random, MIN_THUNDER_DELAY_TIME, MAX_THUNDER_DELAY_TIME);
+        }
+        [...]
+        if (raining) {
+            k = Mth.randomBetweenInclusive(this.random, MIN_RAIN_TIME, MAX_RAIN_TIME);
+        } else {
+            k = Mth.randomBetweenInclusive(this.random, MIN_RAIN_DELAY_TIME, MAX_RAIN_DELAY_TIME);
+        }
+
+        MIN_RAIN_DELAY_TIME = 12000;
+        MAX_RAIN_DELAY_TIME = 180000;
+        MIN_RAIN_TIME = 12000;
+        MAX_RAIN_TIME = 24000;
+        MIN_THUNDER_DELAY_TIME = 12000;
+        MAX_THUNDER_DELAY_TIME = 180000;
+        MIN_THUNDER_TIME = 3600;
+        MAX_THUNDER_TIME = 15600;
+    */
 }

@@ -12,5 +12,6 @@ public class OpenSeasonsCommands {
         CheckClimateCommand.register(dp);
         BiomeHasSeasonsCommand.register(dp);
         CheckCurrentSeasonCommand.register(dp);
+        CheckWeatherParamsCommand.register(dp);
     }
 }
