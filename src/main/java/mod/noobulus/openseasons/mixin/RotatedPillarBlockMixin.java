@@ -1,7 +1,7 @@
 package mod.noobulus.openseasons.mixin;
 
 import mod.noobulus.openseasons.seasons.SeasonMap;
-import mod.noobulus.openseasons.util.ModifiedTempAndHumid;
+import mod.noobulus.openseasons.util.ClimateChecks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
@@ -34,7 +34,7 @@ public abstract class RotatedPillarBlockMixin extends Block {
     // plugin complains but mixin works, emi magic at work
     @Inject(at = @At("HEAD"), method = "randomTick(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Ljava/util/Random;)V")
     public void randomTick(BlockState state, ServerLevel level, BlockPos pos, Random random, CallbackInfo info) {
-        if (state.is(BlockTags.LOGS_THAT_BURN) && ModifiedTempAndHumid.getCurrentSeason().equals(SeasonMap.getByName("Fall"))) {
+        if (state.is(BlockTags.LOGS_THAT_BURN) && ClimateChecks.getCurrentSeason().equals(SeasonMap.getByName("Fall"))) {
             if (random.nextInt(10) == 0) { // regularly 25
                 int i = 5;
                 int j = 4;

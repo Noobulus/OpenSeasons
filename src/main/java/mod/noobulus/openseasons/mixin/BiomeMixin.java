@@ -1,9 +1,5 @@
 package mod.noobulus.openseasons.mixin;
 
-import mod.noobulus.openseasons.init.OpenSeasonsTags;
-import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
-import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.world.level.biome.Biome;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static mod.noobulus.openseasons.util.ModifiedTempAndHumid.getCurrentSeason;
+import static mod.noobulus.openseasons.util.ClimateChecks.getCurrentSeason;
 
 @Mixin(Biome.class)
 public class BiomeMixin {

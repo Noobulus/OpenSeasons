@@ -1,6 +1,6 @@
 package mod.noobulus.openseasons.mixin;
 
-import mod.noobulus.openseasons.util.ModifiedTempAndHumid;
+import mod.noobulus.openseasons.util.ClimateChecks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -23,7 +23,7 @@ public abstract class FireBlockMixin extends BaseFireBlock {
 
     @ModifyArg(method = "Lnet/minecraft/world/level/block/FireBlock;tick(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Ljava/util/Random;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/FireBlock;tryCatchFire(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;ILjava/util/Random;ILnet/minecraft/core/Direction;)V"), index = 2)
     private int modifyFireChance(Level level, BlockPos pos, int chance, Random random, int age, Direction face) {
-        return (int) (chance * ModifiedTempAndHumid.getClimateFireChanceMult(level.getBiome(pos), pos));
+        return (int) (chance * ClimateChecks.getClimateFireChanceMult(level.getBiome(pos), pos));
     }
 
     @ModifyVariable(method = "Lnet/minecraft/world/level/block/FireBlock;tick(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Ljava/util/Random;)V", at = @At("STORE"), ordinal = 1)
@@ -33,6 +33,6 @@ public abstract class FireBlockMixin extends BaseFireBlock {
 
     @ModifyVariable(method = "Lnet/minecraft/world/level/block/FireBlock;tick(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Ljava/util/Random;)V", at = @At("STORE"), ordinal = 8)
     private int modifyFireEncouragement(int encouragement, BlockState pState, ServerLevel pLevel, BlockPos pPos, Random pRand) {
-        return (int) (encouragement * ModifiedTempAndHumid.getClimateFireEncouragementMult(pLevel.getBiome(pPos), pPos));
+        return (int) (encouragement * ClimateChecks.getClimateFireEncouragementMult(pLevel.getBiome(pPos), pPos));
     }
 }

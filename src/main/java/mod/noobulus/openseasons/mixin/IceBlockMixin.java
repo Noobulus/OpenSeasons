@@ -1,6 +1,6 @@
 package mod.noobulus.openseasons.mixin;
 
-import mod.noobulus.openseasons.util.ModifiedTempAndHumid;
+import mod.noobulus.openseasons.util.ClimateChecks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -20,7 +20,7 @@ public abstract class IceBlockMixin {
 
     @Inject(method = "Lnet/minecraft/world/level/block/IceBlock;randomTick(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Ljava/util/Random;)V", at = @At("TAIL"))
     private void makeIceMeltWhenHot(BlockState state, ServerLevel level, BlockPos pos, Random random, CallbackInfo ci) {
-        if (ModifiedTempAndHumid.shouldIceMelt(level.getBiome(pos), pos)) {
+        if (ClimateChecks.shouldIceMelt(level.getBiome(pos), pos)) {
             this.melt(state, level, pos);
         }
     }

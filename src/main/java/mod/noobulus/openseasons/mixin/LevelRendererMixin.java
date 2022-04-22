@@ -1,6 +1,6 @@
 package mod.noobulus.openseasons.mixin;
 
-import mod.noobulus.openseasons.util.ModifiedTempAndHumid;
+import mod.noobulus.openseasons.util.ClimateChecks;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
@@ -21,7 +21,7 @@ public class LevelRendererMixin {
         if (level == null) { // prevent NPE shenanigans
             return false;
         }
-        return ModifiedTempAndHumid.canRain(level.getBiome(pos), pos);
+        return ClimateChecks.canRain(level.getBiome(pos), pos);
     }
 
     @Redirect(method = "Lnet/minecraft/client/renderer/LevelRenderer;tickRain(Lnet/minecraft/client/Camera;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;warmEnoughToRain(Lnet/minecraft/core/BlockPos;)Z"))
@@ -29,7 +29,7 @@ public class LevelRendererMixin {
         if (level == null) { // prevent NPE shenanigans
             return false;
         }
-        return ModifiedTempAndHumid.canRain(level.getBiome(pos), pos);
+        return ClimateChecks.canRain(level.getBiome(pos), pos);
     }
 
 

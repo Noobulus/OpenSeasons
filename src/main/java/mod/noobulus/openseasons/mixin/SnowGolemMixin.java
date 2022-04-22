@@ -1,6 +1,6 @@
 package mod.noobulus.openseasons.mixin;
 
-import mod.noobulus.openseasons.util.ModifiedTempAndHumid;
+import mod.noobulus.openseasons.util.ClimateChecks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -19,6 +19,6 @@ public abstract class SnowGolemMixin extends Entity {
 
     @Redirect(method = "Lnet/minecraft/world/entity/animal/SnowGolem;aiStep()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;shouldSnowGolemBurn(Lnet/minecraft/core/BlockPos;)Z"))
     private boolean redirectShouldGolemBurn(Biome biome, BlockPos pos) {
-        return ModifiedTempAndHumid.moddedShouldSnowGolemBurn(this.level.getBiome(pos), pos);
+        return ClimateChecks.moddedShouldSnowGolemBurn(this.level.getBiome(pos), pos);
     }
 }
